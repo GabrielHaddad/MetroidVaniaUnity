@@ -20,9 +20,11 @@ public class Rope : MonoBehaviour
     [SerializeField] LayerMask whatIsGrappable;
     [SerializeField] LayerMask isGround;
     [SerializeField] float runSpeed;
+    [SerializeField] float dashStrenght;
     [SerializeField] float jumpForce;
     [SerializeField] float distanceGrapple;
     bool isGrapling = false;
+    float moveInput;
 
     
     void Awake() 
@@ -54,16 +56,30 @@ public class Rope : MonoBehaviour
             StartGrapple();
         }
 
-        Run();
         
+    }
+
+    void FixedUpdate() 
+    {
+        moveInput = Input.GetAxisRaw("Horizontal");
+        //rb2d.AddForce(new Vector2(moveInput * runSpeed * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
+        rb2d.velocity += new Vector2(moveInput * runSpeed * 10 * Time.fixedDeltaTime, 0f);
+        
+
         if (Input.GetKey(KeyCode.Space) && (boxCollider2D.IsTouchingLayers(isGround) || isGrapling))
         {
-            rb2d.AddForce(new Vector2 (0f, jumpForce * Time.deltaTime), ForceMode2D.Impulse);
+            rb2d.AddForce(new Vector2 (0f, jumpForce * 10 * Time.deltaTime), ForceMode2D.Impulse);
             isGrapling = false;
             joint2D.enabled = false;
             lineRenderer.enabled = false;
         }
-        
+
+        if (Input.GetMouseButton(1))
+        {
+            Debug.Log("sfsd");
+            moveInput = Input.GetAxisRaw("Horizontal");
+            rb2d.AddForce(new Vector2(moveInput * dashStrenght * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
+        }
     }
 
     void LateUpdate() 
