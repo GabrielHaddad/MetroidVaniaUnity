@@ -55,16 +55,21 @@ public class Rope : MonoBehaviour
         {
             StartGrapple();
         }
-
-        
     }
 
     void FixedUpdate() 
     {
         moveInput = Input.GetAxisRaw("Horizontal");
         //rb2d.AddForce(new Vector2(moveInput * runSpeed * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
-        rb2d.velocity += new Vector2(moveInput * runSpeed * 10 * Time.fixedDeltaTime, 0f);
-        
+        float xMovement = moveInput * runSpeed * 10 * Time.fixedDeltaTime;
+        Vector2 playerVelocity = new Vector2(xMovement, rb2d.velocity.y);
+
+        if (Mathf.Abs(xMovement) < Mathf.Epsilon && isGrapling)
+        {
+            playerVelocity.x = rb2d.velocity.x;
+        }
+
+        rb2d.velocity = playerVelocity;
 
         if (Input.GetKey(KeyCode.Space) && (boxCollider2D.IsTouchingLayers(isGround) || isGrapling))
         {
@@ -124,5 +129,15 @@ public class Rope : MonoBehaviour
 
         lineRenderer.SetPosition(0, gunPoint.position);
         lineRenderer.SetPosition(1, currentGrapplePosition);
+    }
+
+    void OnJointBreak2D(Joint2D brokenJoint)
+    {
+        lineRenderer.enabled = false;
+        isGrapling = false;
+        joint2D = gameObject.AddComponent(joint2D.GetType()) as SpringJoint2D;
+        joint2D.enabled = false;
+        joint2D.enableCollision = true;
+        joint2D.breakForce = 5000f;
     }
 }
