@@ -15,7 +15,7 @@ public class Rope : MonoBehaviour
     Vector2 currentGrapplePosition;
     Vector2 worldPoint;
     Vector2 grapplePoint;
-    [SerializeField] Transform gunPoint; 
+    [SerializeField] Transform gunPoint;
     BoxCollider2D boxCollider2D;
     [SerializeField] LayerMask whatIsGrappable;
     [SerializeField] LayerMask isGround;
@@ -25,9 +25,13 @@ public class Rope : MonoBehaviour
     [SerializeField] float distanceGrapple;
     bool isGrapling = false;
     float moveInput;
+    [SerializeField] float dashDistance = 15f;
+    bool isDashing = false;
+    [SerializeField] float dashCoolDown = 0.5f;
+    [SerializeField] ParticleSystem dashEffect;
 
-    
-    void Awake() 
+
+    void Awake()
     {
         lineRenderer = GetComponent<LineRenderer>();
         rb2d = GetComponent<Rigidbody2D>();
@@ -57,37 +61,70 @@ public class Rope : MonoBehaviour
         }
     }
 
-    void FixedUpdate() 
+    void FixedUpdate()
     {
         moveInput = Input.GetAxisRaw("Horizontal");
-        //rb2d.AddForce(new Vector2(moveInput * runSpeed * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
-        float xMovement = moveInput * runSpeed * 10 * Time.fixedDeltaTime;
-        Vector2 playerVelocity = new Vector2(xMovement, rb2d.velocity.y);
 
-        if (Mathf.Abs(xMovement) < Mathf.Epsilon && isGrapling)
+        if (!isDashing)
         {
-            playerVelocity.x = rb2d.velocity.x;
+
+            //rb2d.AddForce(new Vector2(moveInput * runSpeed * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
+            float xMovement = moveInput * runSpeed * 10 * Time.fixedDeltaTime;
+            Vector2 playerVelocity = new Vector2(xMovement, rb2d.velocity.y);
+
+            if (Mathf.Abs(xMovement) < Mathf.Epsilon && isGrapling)
+            {
+                playerVelocity.x = rb2d.velocity.x;
+            }
+
+            rb2d.velocity = playerVelocity;
+
         }
 
-        rb2d.velocity = playerVelocity;
 
-        if (Input.GetKey(KeyCode.Space) && (boxCollider2D.IsTouchingLayers(isGround) || isGrapling))
+        if (!isDashing && Input.GetKey(KeyCode.Space) && (boxCollider2D.IsTouchingLayers(isGround) || isGrapling))
         {
-            rb2d.AddForce(new Vector2 (0f, jumpForce * 10 * Time.deltaTime), ForceMode2D.Impulse);
+            rb2d.AddForce(new Vector2(0f, jumpForce * 10 * Time.deltaTime), ForceMode2D.Impulse);
             isGrapling = false;
             joint2D.enabled = false;
             lineRenderer.enabled = false;
         }
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetKey(KeyCode.E) && !isDashing)
         {
-            Debug.Log("sfsd");
-            moveInput = Input.GetAxisRaw("Horizontal");
-            rb2d.AddForce(new Vector2(moveInput * dashStrenght * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
+            StartCoroutine(Dash());
+            //moveInput = Input.GetAxisRaw("Horizontal");
+            // rb2d.AddForce(new Vector2(moveInput * dashStrenght * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);    
         }
     }
 
-    void LateUpdate() 
+    IEnumerator Dash()
+    {
+        isDashing = true;
+        if (Mathf.Abs(moveInput) < Mathf.Epsilon)
+        {
+            rb2d.velocity = new Vector2(rb2d.velocity.x, 0f);
+            rb2d.AddForce(new Vector2(dashDistance * 10 * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
+            Debug.Log("Force?");
+        }
+        else
+        {
+            rb2d.velocity = new Vector2(rb2d.velocity.x, 0f);
+            rb2d.AddForce(new Vector2(dashDistance * moveInput * Time.fixedDeltaTime, 0f), ForceMode2D.Impulse);
+        }
+
+        ParticleSystem instance = Instantiate(dashEffect, transform.position, Quaternion.Euler(0f, 0f, -90f), transform);
+        Destroy(instance.gameObject, instance.main.duration + instance.main.startLifetime.constantMax);
+
+        float gravity = rb2d.gravityScale;
+        rb2d.gravityScale = 0;
+
+        yield return new WaitForSeconds(dashCoolDown);
+        isDashing = false;
+        rb2d.gravityScale = gravity;
+    }
+
+    void LateUpdate()
     {
         if (isGrapling)
         {
@@ -120,7 +157,7 @@ public class Rope : MonoBehaviour
 
     void Run()
     {
-        rb2d.AddForce( new Vector2(Input.GetAxisRaw("Horizontal") * runSpeed * Time.deltaTime, 0f), ForceMode2D.Impulse);
+        rb2d.AddForce(new Vector2(Input.GetAxisRaw("Horizontal") * runSpeed * Time.deltaTime, 0f), ForceMode2D.Impulse);
     }
 
     private void DrawRope()
