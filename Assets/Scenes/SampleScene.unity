@@ -157,25 +157,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c566238109014274a97e299f7558267d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunPoint: {fileID: 983040561}
-  whatIsGrappable:
+  lineWidth: 0.2
+  grapplingDistance: 10
+  grappleGunStartPoint: {fileID: 983040561}
+  isGrappable:
     serializedVersion: 2
     m_Bits: 256
-  whatIsWallJumpable:
-    serializedVersion: 2
-    m_Bits: 512
+  distanceBetweenAtachedBodies: 0.5
   isGround:
     serializedVersion: 2
     m_Bits: 64
-  runSpeed: 150
-  dashStrenght: 200
-  jumpForce: 1500
-  distanceGrapple: 0.5
-  dashDistance: 1000
-  dashCoolDown: 0.8
+  runSpeed: 15
+  jumpForce: 200
+  dashDistance: 200
+  dashCoolDown: 0.6
   dashEffect: {fileID: 5614276722578415401, guid: 9002f8c358f7b3c40b560e050235c8a3, type: 3}
+  isWallJumpable:
+    serializedVersion: 2
+    m_Bits: 512
   wallSlideSpeed: 1
-  wallJumpForce: 1500
+  wallJumpForce: 300
   stopMovementWallJump: 0.3
 --- !u!212 &201625407
 SpriteRenderer:
@@ -237,7 +238,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 201625405}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.61, y: 23.34, z: 0}
+  m_LocalPosition: {x: -22.6, y: 19, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 983040561}
@@ -522,7 +523,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.998478, y: -26.650894, z: 127.52525}
+  m_LocalPosition: {x: -16.988478, y: -30.990894, z: 127.52525}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1664986878}
@@ -817,7 +818,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 642767768}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -15.998478, y: -26.650894, z: 127.52525}
+  m_LocalPosition: {x: -16.988478, y: -30.990894, z: 127.52525}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1170135595}
